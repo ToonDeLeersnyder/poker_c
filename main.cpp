@@ -74,20 +74,27 @@ int willYouRaise( struct Game * game, struct Player * player, unsigned int total
 	printf( "%s what do you do ?\n", player->name );
 	switch( player->ID )
 	{
-	case 0: //THIS IS ME !!!!!!!!!!!!
+    case 0: //Toon
 	{
         int maxInzet = game->players[game->dealer]->chips / 2;
         PokerRank myCombo = getMyHandRank( player->hand );
-        if( table[0] == nullptr && player->hand->cards[0]->rank >= 10 && player->hand->cards[1]->rank >= 10){
-            if( myCombo.category >= ONE_PAIR  )
+        if( table[0] == nullptr ){
+            if( myCombo.category >= ONE_PAIR && player->hand->cards[0]->rank >= 9 && player->hand->cards[1]->rank >= 9 )
             {
-                return( player->chips );
+                return( 10 );
+            }
+            if (player->hand->cards[0]->rank >= 9 && player->hand->cards[1]->rank >= 9){
+                if( totalBet > ( player->bet * 2 ) || ( totalBet > ( game->blind * 5 ) && totalBet > ( player->chips / 2 ) ) )
+                {
+                    return( -1 );
+                }
+                return( 0 );
             }
             else {
-                return( -1 );
+                return(-1);
             }
         }
-        if( table[1] != nullptr && player->hand->cards[0]->rank >= 10 && player->hand->cards[1]->rank >= 10){
+        if( table[1] != nullptr && player->hand->cards[0]->rank >= 6 && player->hand->cards[1]->rank >= 6){
 
                 if( myCombo.category >= THREE_OF_A_KIND )
                 {
@@ -96,6 +103,27 @@ int willYouRaise( struct Game * game, struct Player * player, unsigned int total
                 else {
                     return( -1 );
                 }
+        }
+        if( table[3] != nullptr )
+        {
+            if( (myCombo.category == TWO_PAIR || myCombo.category == THREE_OF_A_KIND) && player->hand->cards[0]->rank >= 10 && player->hand->cards[1]->rank >= 10  )
+            {
+
+                return( player->chips );
+            }
+            if( (myCombo.category == TWO_PAIR || myCombo.category == THREE_OF_A_KIND) && player->hand->cards[0]->rank <= 9 && player->hand->cards[1]->rank <= 9  )
+            {
+
+                return( player->chips/2 );
+            }
+            if( myCombo.category >= FLUSH  )
+            {
+
+                return (player->chips);
+
+
+            }
+            return( -1 );
         }
         else {return ( -1); }
 
@@ -198,7 +226,7 @@ int main( void )
 	p6.ID = 6;
 
 	Player mijnSpeler;
-	strcpy( mijnSpeler.name, "THIS IS ME <-----------------" );
+    strcpy( mijnSpeler.name, "ToonDL :)" );
 	mijnSpeler.ID = 0;
 
 	addPlayerToGame( &game, &p1 );
